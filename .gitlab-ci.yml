@@ -1,0 +1,12 @@
+include:
+  - project: flywheel-io/scientific-solutions/etc/sse-qa-ci
+    ref: 411aae8c32b530d877ffebdb5fe3791054b93851
+    file: ci/default.yml
+
+variables:
+  PYTEST_COV_FAIL_UNDER: 0  # Set pytest coverage to 0
+
+publish:docker:
+  rules:
+    - if: $CI_COMMIT_SHA
+      when: never
