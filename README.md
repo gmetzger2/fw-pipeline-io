@@ -10,10 +10,13 @@
 
 *{From the "description" section of the manifest}*
 
+### License
+
+*License:* *{From the "license" section of the manifest. When Other, be as specific as possible regarding licensing.}*
+
 ### Cite
 
-*{From the "cite" section of the manifest}*
-*License:* *{From the "license" section of the manifest}*
+*{From the "cite" section of the manifest}*  
 
 ### Classification
 
