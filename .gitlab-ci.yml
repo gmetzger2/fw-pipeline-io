@@ -1,0 +1,9 @@
+include:
+  - project: flywheel-io/scientific-solutions/etc/sse-qa-ci
+    ref: d2afa65820a4b7e26bb3ce74c2840d1e51151418
+    file: ci/default.yml
+
+variables:
+  PYVER: "3.8"
+  PYTEST_COV_FAIL_UNDER: 0  # Set pytest coverage to 0
+  DEBUG: "" # Set debug mode to print out executed command on qa-ci
