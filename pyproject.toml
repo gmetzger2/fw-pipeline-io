@@ -1,21 +1,22 @@
 [tool.poetry]
-name = "fw-gear-skeleton"
-version = "0.3.0"
-description = "{{description}}"
+name = "fw-pipeline-io"
+version = "0.0.0"
+description = "A set of tools for Flywheel Pipelines. The current version only supports minimal tools for searching and downlaoding files with tags. "
 authors = ["Flywheel <support@flywheel.io>"]
 readme = "README.md"
 license = "MIT"
 keywords = [
     "Flywheel",
-    "Gears"
+    "Pipeline",
+    "Toolkit"
 ]
-repository = "https://gitlab.com/flywheel-io/flywheel-apps/templates/skeleton"
+repository = "https://gitlab.com/flywheel-io/scientific-solutions/lib/fw-pipeline-io"
 classifiers = [
     "Topic :: Scientific/Engineering"
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 flywheel-gear-toolkit = "^0.6"
 flywheel-sdk = "^16.8.0"
 
@@ -23,6 +24,7 @@ flywheel-sdk = "^16.8.0"
 pytest = "^6.1.2"
 pytest-cov = "^3.0.0"
 pytest-mock = "^3.8.2"
+pre-commit = "^2.9.3"
 
 
 [build-system]
