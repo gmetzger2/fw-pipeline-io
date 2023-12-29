@@ -40,6 +40,7 @@ import zipfile
 from typing import List
 from flywheel import FileEntry, Client
 
+
 class FileDownloader:
     def __init__(self, fw_client: Client = None):
         """
@@ -53,7 +54,9 @@ class FileDownloader:
         else:
             self.fw_client = fw_client
 
-    def download_files(self, file_entries: List[FileEntry], destination_folder: str = None) -> str:
+    def download_files(
+        self, file_entries: List[FileEntry], destination_folder: str = None
+    ) -> str:
         """
         Download files from Flywheel and store them in the specified destination folder.
 
@@ -89,12 +92,14 @@ class FileDownloader:
         if not destination_folder:
             destination_folder = os.path.dirname(zip_file_path)
 
-        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
             zip_ref.extractall(destination_folder)
 
         return destination_folder
 
-    def download_and_unzip_files(self, file_entries: List[FileEntry], destination_folder: str = None) -> str:
+    def download_and_unzip_files(
+        self, file_entries: List[FileEntry], destination_folder: str = None
+    ) -> str:
         """
         Download and unzip files from Flywheel and store them in the specified destination folder.
 
@@ -108,7 +113,6 @@ class FileDownloader:
         """
         downloaded_folder = self.download_files(file_entries, destination_folder)
         for file_entry in file_entries:
-              # have to declare because weird behavior w/ MagicMock getting called in same line as os.path.join
             file_path = os.path.join(downloaded_folder, file_entry.name)
             if file_path.endswith(".zip"):
                 self.unzip_files(file_path, downloaded_folder)

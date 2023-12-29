@@ -1,6 +1,5 @@
 """
-This module is for searching and downloading data_tools that contain a certain tag
-from a container.
+This module is for searching Flywheel Files that contain a certain tag.
 """
 from typing import Union, List
 from flywheel import Client, Project, Subject, Session, Acquisition, Analysis, FileEntry
@@ -11,6 +10,7 @@ class Search:
     This class uses the Flywheel SDK to search for files that have a
     certain tag within a container.
     """
+
     def __init__(self, fw_client: Client = None):
         if fw_client is None:
             self.fw_client = Client()
@@ -25,20 +25,19 @@ class Search:
         recursive: bool = False,
     ) -> List[FileEntry]:
         """
-        Returns a list of files that have a certain tag or data_tools (if a list
-        is passed).
+        Returns a list of files that have a certain tag or tags.
 
         Args
         ----
         tag: Union[str, List[str]]
-            The tag or list of data_tools to search for.
+            The tag or list of tags to search for.
         container: Union[Project, Subject, Session, Acquisition, Analysis]
             Flywheel Container - Project, Subject, Session, Acquisition, or Analysis containers.
         inclusive: bool, optional
-            If a list of data_tools is passed, this sets whether to only return
-            files that include all data_tools in the file. If False, it returns
-            all files that have any of the passed data_tools in the list. If True,
-            it returns only files that have all the data_tools.
+            If a list of tags is passed, this sets whether to only return
+            files that have all tags. If False, it returns
+            all files that have any of the passed tags in the list. If True,
+            it returns only files that have all the tags in the list.
         recursive: bool, optional
             If True, look through all child containers for the files.
 
@@ -55,7 +54,9 @@ class Search:
             file_tags = file_entry.tags
             if isinstance(tag, list):
                 # Check if all data_tools are present or any tag is present based on 'inclusive'
-                if (inclusive and all(t in file_tags for t in tag)) or (not inclusive and any(t in file_tags for t in tag)):
+                if (inclusive and all(t in file_tags for t in tag)) or (
+                    not inclusive and any(t in file_tags for t in tag)
+                ):
                     tagged_files.append(file_entry)
             elif isinstance(tag, str) and tag in file_tags:
                 tagged_files.append(file_entry)
@@ -65,17 +66,23 @@ class Search:
             if isinstance(container, Project):
                 for subject in container.subjects.iter():
                     tagged_files.extend(
-                        self.search_for_file_with_tag(tag, subject, inclusive, recursive)
+                        self.search_for_file_with_tag(
+                            tag, subject, inclusive, recursive
+                        )
                     )
             elif isinstance(container, Subject):
                 for session in container.sessions.iter():
                     tagged_files.extend(
-                        self.search_for_file_with_tag(tag, session, inclusive, recursive)
+                        self.search_for_file_with_tag(
+                            tag, session, inclusive, recursive
+                        )
                     )
             elif isinstance(container, Session):
                 for acquisition in container.acquisitions.iter():
                     tagged_files.extend(
-                        self.search_for_file_with_tag(tag, acquisition, inclusive, recursive)
+                        self.search_for_file_with_tag(
+                            tag, acquisition, inclusive, recursive
+                        )
                     )
 
         return tagged_files

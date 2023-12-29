@@ -6,9 +6,5 @@ repos:
      #  - id: generate_docs # not available yet
      #   args: [docker_run, build] # mkdocs not available yet
       - id: yamllint
-      - id: ruff
-        args: [
-          --ignore, "F403,E402",
-          --fix
-        ]
+      - id: black
       - id: pytest
