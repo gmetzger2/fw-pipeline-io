@@ -1,11 +1,10 @@
 repos:
   - repo: https://gitlab.com/flywheel-io/tools/etc/qa-ci
-    rev: a007afc45e595996f5d7069d7cb12f5c2a4b56a8
+    rev: 3f844e260bdc9114ecd14ffeae7b917f85acaf62
     hooks:
-      - id: gearcheck
-        always_run: true
       - id: poetry_export
-      - id: docker_build
+     #  - id: generate_docs # not available yet
+     #   args: [docker_run, build] # mkdocs not available yet
       - id: yamllint
-      - id: ruff
+      - id: black
       - id: pytest
