@@ -39,6 +39,7 @@ import tempfile
 import zipfile
 from typing import List
 from flywheel import FileEntry, Client
+from uuid import uuid4
 
 
 class FileDownloader:
@@ -118,3 +119,19 @@ class FileDownloader:
                 self.unzip_files(file_path, downloaded_folder)
 
         return downloaded_folder
+
+
+class PrepareSync:
+    @staticmethod
+    def add_uuid_tag_to_container(container, uuid_tag: str = None):
+        if uuid_tag is None:
+            uuid_tag = str(uuid4().hex)  # meet Flywheel's 32 character tag limit
+        response = container.add_tag(uuid_tag)
+        if response["modified"] != 1:
+            raise ValueError(
+                f"Could not add tag {uuid_tag} to container {container.id}"
+            )
+
+    @staticmethod
+    def delete_uuid_tag_from_container(container, uuid_tag: str):
+        container.delete_tag(uuid_tag)
