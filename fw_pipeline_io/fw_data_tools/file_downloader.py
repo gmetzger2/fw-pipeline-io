@@ -5,8 +5,8 @@ This module provides a FileDownloader class that allows users to download files 
 and perform additional operations, such as unzipping.
 
 Example:
-    from fw_pipeline_io.data_tools.file_downloader import FileDownloader
-    from fw_pipeline_io.data_tools.search import Search
+    from fw_pipeline_io.fw_data_tools.file_downloader import FileDownloader
+    from fw_pipeline_io.fw_data_tools.search import Search
     from flywheel import Project
 
     # Initialize the Search and FileDownloader classes

@@ -53,7 +53,7 @@ class Search:
             # Check if the file has the specified tag(s)
             file_tags = file_entry.tags
             if isinstance(tag, list):
-                # Check if all data_tools are present or any tag is present based on 'inclusive'
+                # Check if all fw_data_tools are present or any tag is present based on 'inclusive'
                 if (inclusive and all(t in file_tags for t in tag)) or (
                     not inclusive and any(t in file_tags for t in tag)
                 ):

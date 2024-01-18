@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 from flywheel import Project, Subject, Session, Acquisition, Analysis, FileEntry, Client
-from fw_pipeline_io.data_tools.search import Search
+from fw_pipeline_io.fw_data_tools.search import Search
 
 
 class TestSearch(unittest.TestCase):
