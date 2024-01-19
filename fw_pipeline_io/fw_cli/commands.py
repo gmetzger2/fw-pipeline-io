@@ -75,9 +75,9 @@ class FWCLI:
         params : str
             Additional parameters to pass to the CLI.
         """
-        if src is None:
+        if not src:
             raise ValueError("Please provide a source path on Flywheel.")
-        if dest is None:
+        if not dest:
             raise ValueError("Please provide a destination path on your local machine.")
 
         # Change the directory to the destination folder
@@ -117,9 +117,9 @@ class FWCLI:
         params : str
             Additional parameters to pass to the CLI.
         """
-        if project_path is None:
+        if not project_path:
             raise ValueError("Please provide a Flywheel project path.")
-        if dest is None:
+        if not dest:
             raise ValueError("Please provide a destination path on your local machine.")
 
         command = f'{self.fw_cli_path} sync "{project_path}" "{dest}"'

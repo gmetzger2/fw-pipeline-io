@@ -53,6 +53,108 @@ class TestFWCLI(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.fw_cli_instance.login(api_key="1234")
 
+    def test_sync_pass(self):
+        project_path = "mock_group/mock_project"
+        dest = "flywheel/v0/input"
+        params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
+        with patch("os.system") as mock_os:
+            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+                mock_os.return_value = 0
+                self.fw_cli_instance.sync(
+                    project_path=project_path,
+                    dest=dest,
+                    params=params,
+                )
+                mock_os.assert_called_once_with(
+                    '%s sync "%s" "%s" %s'
+                    % (
+                        self.fw_cli_instance.fw_cli_path,
+                        project_path,
+                        dest,
+                        params,
+                    )
+                )
+                mock_log.info.assert_called_once_with(
+                    "Successfully synced file(s) from Flywheel."
+                )
+
+    def test_sync_fail(self):
+        project_path = "mock_group/mock_project"
+        dest = "flywheel/v0/input"
+        params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
+        with patch("os.system") as mock_os:
+            mock_os.side_effect = Exception("Test exception")
+            with self.assertRaises(ValueError):
+                self.fw_cli_instance.sync(
+                    project_path=project_path,
+                    dest=dest,
+                    params=params,
+                )
+
+    def test_sync_warning(self):
+        project_path = "mock_group/mock_project"
+        dest = "flywheel/v0/input"
+        params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
+        with patch("os.system") as mock_os:
+            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+                mock_os.return_value = 1
+                self.fw_cli_instance.sync(
+                    project_path=project_path,
+                    dest=dest,
+                    params=params,
+                )
+                mock_os.assert_called_once_with(
+                    '%s sync "%s" "%s" %s'
+                    % (
+                        self.fw_cli_instance.fw_cli_path,
+                        project_path,
+                        dest,
+                        params,
+                    )
+                )
+                mock_log.warning.assert_called_once_with(
+                    "Response did not return 0, got response %s", 1
+                )
+
+    def test_sync_no_project_path(self):
+        with self.assertRaises(ValueError):
+            self.fw_cli_instance.sync(
+                project_path="",
+                dest="flywheel/v0/input",
+                params='--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata',
+            )
+
+    def test_sync_no_dest(self):
+        with self.assertRaises(ValueError):
+            self.fw_cli_instance.sync(
+                project_path="mock_group/mock_project",
+                dest="",
+                params='--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata',
+            )
+
+    def test_sync_no_params(self):
+        project_path = "mock_group/mock_project"
+        dest = "flywheel/v0/input"
+        with patch("os.system") as mock_os:
+            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+                mock_os.return_value = 0
+                self.fw_cli_instance.sync(
+                    project_path=project_path,
+                    dest=dest,
+                    params=None,
+                )
+                mock_os.assert_called_once_with(
+                    '%s sync "%s" "%s"'
+                    % (
+                        self.fw_cli_instance.fw_cli_path,
+                        project_path,
+                        dest,
+                    )
+                )
+                mock_log.info.assert_called_once_with(
+                    "Successfully synced file(s) from Flywheel."
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
