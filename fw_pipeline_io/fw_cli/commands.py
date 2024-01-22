@@ -11,6 +11,24 @@ log = logging.getLogger(__name__)
 
 
 class FWCLI:
+    cli_missing_msg = (
+        "If this is a Docker image/Flywheel gear, ensure that the "
+        "Dockerfile copies the executable as follows:\n"
+        "\tCOPY ./fw '/usr/local/bin/'\n"
+        "Please also check that the .dockerignore file does not exclude"
+        "`fw` from being copied into the Docker image."
+    )
+
+    def check_if_attempting_to_pipe(self, command: str):
+        """
+        Check if the string that the user passes contains any piping characters, like
+        `|`, `;`, `&&`, etc. If so, raise an error.
+        """
+        if "|" in command or ";" in command or "&" in command:
+            raise ValueError(
+                "You are attempting to pipe commands. This is not allowed."
+            )
+
     def __init__(self, fw_cli_path: str = None):
         """
         Initialize the FWCLI object.
@@ -25,13 +43,15 @@ class FWCLI:
             if fw_cli_path is None:
                 raise ValueError(
                     "Could not find Flywheel CLI. Please install it or pass a "
-                    "path to the CLI and try again."
+                    "path to the CLI and try again.\n"
+                    "%s" % self.cli_missing_msg
                 )
         else:
             if not Path(fw_cli_path).exists():
                 raise ValueError(
                     "Could not find Flywheel CLI at the specified path. Please"
-                    " install it or pass a path to the CLI and try again."
+                    " install it or pass a path to the CLI and try again.\n"
+                    "%s" % self.cli_missing_msg
                 )
 
         self.fw_cli_path = fw_cli_path
@@ -45,10 +65,11 @@ class FWCLI:
         api_key : str
             Flywheel API key.
         """
-        if api_key is None:
+        if not api_key:
             raise ValueError("Please provide a Flywheel API key.")
 
         command = f"{self.fw_cli_path} login {api_key}"
+        self.check_if_attempting_to_pipe(command=command)
         try:
             response = os.system(command)
         except Exception as e:
@@ -88,6 +109,7 @@ class FWCLI:
         if params is not None:
             command += f" {params}"
 
+        self.check_if_attempting_to_pipe(command=command)
         try:
             response = os.system(command)
         except Exception as e:
@@ -126,6 +148,7 @@ class FWCLI:
         if params is not None:
             command += f" {params}"
 
+        self.check_if_attempting_to_pipe(command=command)
         try:
             response = os.system(command)
         except Exception as e:
