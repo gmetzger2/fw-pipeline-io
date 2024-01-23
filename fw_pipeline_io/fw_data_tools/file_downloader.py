@@ -125,7 +125,8 @@ class PrepareSync:
     @staticmethod
     def add_uuid_tag_to_container(container, uuid_tag: str = None):
         if uuid_tag is None:
-            uuid_tag = str(uuid4().hex)  # meet Flywheel's 32 character tag limit
+            # generate uuid and meet Flywheel's 32 char tag limit with .hex
+            uuid_tag = str(uuid4().hex)
         response = container.add_tag(uuid_tag)
         if response["modified"] != 1:
             raise ValueError(

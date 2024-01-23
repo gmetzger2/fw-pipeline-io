@@ -1,5 +1,5 @@
 """
-Python functions for the Fllywheel CLI.
+Python functions for the Flywheel CLI.
 """
 import shutil
 from pathlib import Path
