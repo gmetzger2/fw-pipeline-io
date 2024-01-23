@@ -5,8 +5,8 @@ This module provides a FileDownloader class that allows users to download files 
 and perform additional operations, such as unzipping.
 
 Example:
-    from fw_pipeline_io.data_tools.file_downloader import FileDownloader
-    from fw_pipeline_io.data_tools.search import Search
+    from fw_pipeline_io.fw_data_tools.file_downloader import FileDownloader
+    from fw_pipeline_io.fw_data_tools.search import Search
     from flywheel import Project
 
     # Initialize the Search and FileDownloader classes
@@ -39,6 +39,7 @@ import tempfile
 import zipfile
 from typing import List
 from flywheel import FileEntry, Client
+from uuid import uuid4
 
 
 class FileDownloader:
@@ -118,3 +119,20 @@ class FileDownloader:
                 self.unzip_files(file_path, downloaded_folder)
 
         return downloaded_folder
+
+
+class PrepareSync:
+    @staticmethod
+    def add_uuid_tag_to_container(container, uuid_tag: str = None):
+        if uuid_tag is None:
+            # generate uuid and meet Flywheel's 32 char tag limit with .hex
+            uuid_tag = str(uuid4().hex)
+        response = container.add_tag(uuid_tag)
+        if response["modified"] != 1:
+            raise ValueError(
+                f"Could not add tag {uuid_tag} to container {container.id}"
+            )
+
+    @staticmethod
+    def delete_uuid_tag_from_container(container, uuid_tag: str):
+        container.delete_tag(uuid_tag)
