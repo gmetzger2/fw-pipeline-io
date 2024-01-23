@@ -89,12 +89,14 @@ class FWCLI:
 
         Parameters
         ----------
-        project_path : str
-            Source path on Flywheel.
+        src : str
+            Source path on Flywheel. Example path for a file:
+                "my_group/my_project/my_subject/my_session/my_acq/my_file_name.zip"
         dest : str
-            Destination path on local machine.
+            Destination path on local machine, e.g., "/Users/jesusavila/Downloads"
         params : str
-            Additional parameters to pass to the CLI.
+            Additional parameters to pass to the CLI. `fw download -h` for
+            available parameters.
         """
         if not src:
             raise ValueError("Please provide a source path on Flywheel.")
@@ -135,9 +137,10 @@ class FWCLI:
         project_path : str
             Flywheel project path, e.g., "my_group/my_project".
         dest : str
-            Destination path on local machine.
+            Destination path on local machine, e.g., "/Users/jesusavila/Downloads"
         params : str
-            Additional parameters to pass to the CLI.
+            Additional parameters to pass to the CLI. Reference `fw sync -h` for
+            available parameters.
         """
         if not project_path:
             raise ValueError("Please provide a Flywheel project path.")

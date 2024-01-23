@@ -81,6 +81,9 @@ class TestFWCLI(unittest.TestCase):
                 self.fw_cli_instance.login(api_key="1234")
 
     def test_sync_pass(self):
+        """
+        Test if sync works; some parameters are passed.
+        """
         project_path = "mock_group/mock_project"
         dest = "flywheel/v0/input"
         params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
@@ -106,19 +109,27 @@ class TestFWCLI(unittest.TestCase):
                 )
 
     def test_sync_fail(self):
+        """
+        Test if sync fails with some Exception; some parameters are passed.
+        """
         project_path = "mock_group/mock_project"
         dest = "flywheel/v0/input"
         params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
         with patch("os.system") as mock_os:
             mock_os.side_effect = Exception("Test exception")
-            with self.assertRaises(ValueError):
+            with self.assertRaises(ValueError) as context:
                 self.fw_cli_instance.sync(
                     project_path=project_path,
                     dest=dest,
                     params=params,
                 )
+            self.assertTrue("Test exception" in str(context.exception))
 
     def test_sync_warning(self):
+        """
+        Test that sync passes, but warn if something other than 0 is returned by the
+        CLI command.
+        """
         project_path = "mock_group/mock_project"
         dest = "flywheel/v0/input"
         params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
@@ -144,22 +155,38 @@ class TestFWCLI(unittest.TestCase):
                 )
 
     def test_sync_no_project_path(self):
-        with self.assertRaises(ValueError):
+        """
+        Test that an error is raised when no project path is passed.
+        """
+        with self.assertRaises(ValueError) as context:
             self.fw_cli_instance.sync(
                 project_path="",
                 dest="flywheel/v0/input",
-                params='--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata',
+                params=None,
             )
+        self.assertTrue(
+            "Please provide a Flywheel project path." in str(context.exception)
+        )
 
     def test_sync_no_dest(self):
-        with self.assertRaises(ValueError):
+        """
+        Test that an error is raised when no destination path is passed.
+        """
+        with self.assertRaises(ValueError) as context:
             self.fw_cli_instance.sync(
                 project_path="mock_group/mock_project",
                 dest="",
-                params='--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata',
+                params=None,
             )
+        self.assertTrue(
+            "Please provide a destination path on your local machine."
+            in str(context.exception)
+        )
 
     def test_sync_no_params(self):
+        """
+        Test that sync works; no parameters are passed.
+        """
         project_path = "mock_group/mock_project"
         dest = "flywheel/v0/input"
         with patch("os.system") as mock_os:
