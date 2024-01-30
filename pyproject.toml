@@ -19,6 +19,7 @@ classifiers = [
 python = "^3.9"
 flywheel-gear-toolkit = "^0.6"
 flywheel-sdk = "^16.8.0"
+pydantic = "^1.7.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
