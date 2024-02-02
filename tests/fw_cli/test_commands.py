@@ -1,4 +1,4 @@
-from fw_pipeline_io.fw_cli.commands import FWCLI
+from fw_pipeline_io.fwcli.commands import FWCLI
 from unittest.mock import MagicMock, patch
 import unittest
 
@@ -63,7 +63,7 @@ class TestFWCLI(unittest.TestCase):
         Test successful login to Flywheel using the CLI and a mock API key"
         """
         with patch("os.system") as mock_os:
-            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+            with patch("fw_pipeline_io.fwcli.commands.log") as mock_log:
                 mock_os.return_value = 0
                 self.fw_cli_instance.login(api_key="1234")
                 mock_os.assert_called_once_with("/usr/local/bin/fw login 1234")
@@ -88,7 +88,7 @@ class TestFWCLI(unittest.TestCase):
         dest = "flywheel/v0/input"
         params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
         with patch("os.system") as mock_os:
-            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+            with patch("fw_pipeline_io.fwcli.commands.log") as mock_log:
                 mock_os.return_value = 0
                 self.fw_cli_instance.sync(
                     project_path=project_path,
@@ -134,7 +134,7 @@ class TestFWCLI(unittest.TestCase):
         dest = "flywheel/v0/input"
         params = '--include "nifti" --include-container-tags \'{"session": ["sync"], "file": ["T2_tse"]}\' --metadata'
         with patch("os.system") as mock_os:
-            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+            with patch("fw_pipeline_io.fwcli.commands.log") as mock_log:
                 mock_os.return_value = 1
                 self.fw_cli_instance.sync(
                     project_path=project_path,
@@ -190,7 +190,7 @@ class TestFWCLI(unittest.TestCase):
         project_path = "mock_group/mock_project"
         dest = "flywheel/v0/input"
         with patch("os.system") as mock_os:
-            with patch("fw_pipeline_io.fw_cli.commands.log") as mock_log:
+            with patch("fw_pipeline_io.fwcli.commands.log") as mock_log:
                 mock_os.return_value = 0
                 self.fw_cli_instance.sync(
                     project_path=project_path,
