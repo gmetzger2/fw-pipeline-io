@@ -2,7 +2,7 @@ import os
 import tempfile
 from typing import List, Tuple
 from pydantic import BaseModel
-from fw_pipeline_io.iohandling.tagsfile import TagsFileManager
+from fw_pipeline_io.iohandling.yamlfiles import TagsFileManager
 import unittest
 import yaml
 

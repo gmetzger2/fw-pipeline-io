@@ -1,3 +1,4 @@
+import abc
 from typing import List, Tuple, Type, Union
 from pydantic import BaseModel
 import yaml
@@ -5,6 +6,51 @@ import os
 import logging
 
 log = logging.getLogger(__name__)
+
+
+class YamlFile:
+    @staticmethod
+    def load_yaml_settings(yaml_path, class_type):
+        """
+        Parse config.yml into a pydantic struct.
+        Returns
+        -------
+        config_file: ConfigFile
+            An object with all the parameters of the input config file.
+        """
+
+        with open(yaml_path) as handler:
+            raw_map = yaml.full_load(handler)
+
+        log.debug("raw_yaml: %s" % raw_map)
+
+        yaml_settings = class_type.parse_obj(raw_map)
+
+        return yaml_settings
+
+    @staticmethod
+    def save_yaml_file(
+        base_model: Type[BaseModel],
+        yaml_dir_path: Union[str, os.PathLike],
+        yaml_file_name: str = "tags_file.yaml",
+    ):
+        """
+        Save an instance of a pydantic BaseModel file to a YAML file.
+
+        Args
+        ----
+        base_model: TagsFileIn or TagsFileOut
+            An instance of pydantic.BaseModel.
+        yaml_dir_path: Union[str, os.PathLike]
+            The path to the directory where the YAML file will be saved.
+        yaml_file_name: str, optional
+            The name of the YAML file. Defaults to "tags_file.yaml".
+        """
+        yaml_file_path = os.path.join(yaml_dir_path, yaml_file_name)
+        with open(yaml_file_path, "w") as yaml_file:
+            yaml.dump(base_model.dict(), yaml_file)
+
+        log.info("Model saved to %s" % yaml_file_path)
 
 
 class TagsFileManager:
@@ -145,8 +191,4 @@ class TagsFileManager:
         yaml_file_name: str, optional
             The name of the YAML file. Defaults to "tags_file.yaml".
         """
-        yaml_file_path = os.path.join(yaml_dir_path, yaml_file_name)
-        with open(yaml_file_path, "w") as yaml_file:
-            yaml.dump(tags_file_instance.dict(), yaml_file)
-
-        log.info("Tags file saved to %s" % yaml_file_path)
+        YamlFile.save_yaml_file(tags_file_instance, yaml_dir_path, yaml_file_name)
