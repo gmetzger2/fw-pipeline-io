@@ -714,15 +714,21 @@ class DefaultSyncInterface(SyncInterface):
         """
         # Tag the parent container with its own id if it doesn't have it
         # already
-        if file_entry.id not in file_entry.tags:
-            log.info("Tagging file '%s' with its own id" % file_entry.id)
-            PrepareSync.add_uuid_tag_to_container(
-                container=file_entry, uuid_tag=sync_tag
+        if sync_tag not in file_entry.tags:
+            log.info(
+                "Tagging file '%s' with sync tag '%s'" % (file_entry.file_id, sync_tag)
             )
+            response = file_entry.add_tag(tag=sync_tag)
+            if sync_tag not in response:
+                raise ValueError(
+                    "The sync tag '%s' was not added to file '%s'."
+                    % (sync_tag, file_entry.file_id)
+                )
         else:
             log.warning(
-                "FileEntry '%s' already has its own id as a tag. This means "
-                "that this file was used for a previous sync." % file_entry.id
+                "FileEntry '%s' already has the sync tag %s. This means "
+                "that this file was used for a previous sync."
+                % (file_entry.file_id, sync_tag)
             )
 
     @staticmethod
@@ -837,6 +843,7 @@ class DefaultSyncInterface(SyncInterface):
 
         # Split the file name from its extension(s)
         fname, extensions = split_dicom_ext(filename)
+        log.debug("fname: %s, extensions: %s" % (fname, extensions))
 
         # Look for similarly named nifti and json files. There should only be
         # one of each in the container
