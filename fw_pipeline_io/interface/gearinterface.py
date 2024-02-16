@@ -231,13 +231,7 @@ class GearConfigYaml:
 
 
 class SyncInterface(ABC):
-    @property
-    @abstractmethod
-    def sync_params_prefix(self):
-        """
-        The prefix parameters to be used when syncing files.
-        """
-        raise NotImplementedError
+    sync_params_prefix: str
 
     @abstractmethod
     def sync_main_function(self) -> Union[os.PathLike, str]:
@@ -330,9 +324,7 @@ class SyncInterface(ABC):
 
 
 class DefaultSyncInterface(SyncInterface):
-    sync_params_prefix: str = (
-        '--include "nifti" --include "source code" --no-audit-log',
-    )
+    sync_params_prefix = '--include "nifti" --include "source code" --no-audit-log'
 
     def __init__(
         self,
