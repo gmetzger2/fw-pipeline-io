@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from flywheel.models import FileEntry
 from typing import Union
 import flywheel
+from flywheel import Project, Subject, Session, Acquisition, Analysis
 import os
 from uuid import uuid4
 import pandas as pd
@@ -16,6 +17,7 @@ from flywheel_gear_toolkit import GearToolkitContext
 from fw_pipeline_io.fwcli.commands import FWCLI
 from fw_pipeline_io.fwdatatools.file_downloader import PrepareSync
 from fw_pipeline_io.iohandling.yamlfiles import YamlFile
+from fw_pipeline_io.util.fwfile import split_dicom_ext
 
 
 log = logging.getLogger(__name__)
@@ -702,10 +704,35 @@ class DefaultSyncInterface(SyncInterface):
         return parent_container
 
     @staticmethod
+    def tag_file_with_sync_tag(file_entry: FileEntry, sync_tag: str = "sync"):
+        """
+        Tag the file with the sync tag.
+
+        Args
+        ----
+        file_entry (FileEntry): The file entry to tag.
+        """
+        # Tag the parent container with its own id if it doesn't have it
+        # already
+        if file_entry.id not in file_entry.tags:
+            log.info("Tagging file '%s' with its own id" % file_entry.id)
+            PrepareSync.add_uuid_tag_to_container(
+                container=file_entry, uuid_tag=sync_tag
+            )
+        else:
+            log.warning(
+                "FileEntry '%s' already has its own id as a tag. This means "
+                "that this file was used for a previous sync." % file_entry.id
+            )
+
+    @staticmethod
     def tag_parent_container_with_its_id(
         parent_container: Union[
-            flywheel.Project, flywheel.Subject, flywheel.Session,
-            flywheel.Acquisition, flywheel.Analysis
+            flywheel.Project,
+            flywheel.Subject,
+            flywheel.Session,
+            flywheel.Acquisition,
+            flywheel.Analysis,
         ],
     ):
         """
@@ -782,6 +809,71 @@ class DefaultSyncInterface(SyncInterface):
         # Get the paths of the files that were synced to the gear's input directory
         synced_files = audit_log["dest_path"].tolist()
         return synced_files
+
+    @staticmethod
+    def get_nifti_and_json_files_from_parent_container(
+        file_entry: FileEntry,
+        parent_container: Union[Project, Subject, Session, Acquisition, Analysis],
+    ):
+        """
+        Get the nifti and json files from the parent container of the dicom file.
+
+        Args
+        ----
+        file_entry: FileEntry
+            The dicom file entry.
+        parent_container: Union[Project, Subject, Session, Acquisition, Analysis]
+            The parent container of the dicom file.
+
+        Returns
+        -------
+        nifti_file: FileEntry
+            The nifti file entry.
+        json_file: FileEntry
+            The json file entry.
+        """
+        # Get the file name
+        filename = file_entry.name
+
+        # Split the file name from its extension(s)
+        fname, extensions = split_dicom_ext(filename)
+
+        # Look for similarly named nifti and json files. There should only be
+        # one of each in the container
+        niftis = []
+        jsons = []
+        for file_ in parent_container.files:
+            if file_.name.startswith(fname):
+                if file_.type == "nifti":
+                    niftis.append(file_)
+                if file_.type == "source code" and file_.name.endswith(".json"):
+                    jsons.append(file_)
+
+        # Verify that there is only one nifti and one json file
+        raise_err_bool = False
+        if len(niftis) != 1:
+            log.error(
+                "Expected one nifti file in the parent container, but found %d."
+                % len(niftis)
+            )
+            raise_err_bool = True
+        if len(jsons) != 1:
+            log.error(
+                "Expected one json file in the parent container, but found %d."
+                % len(jsons)
+            )
+            raise_err_bool = True
+        if raise_err_bool:
+            raise ValueError(
+                "There should be one nifti and one json file in parent container "
+                "'%s' (container type: '%s', id: '%s')."
+                % (
+                    parent_container.label,
+                    parent_container.container_type,
+                    parent_container.id,
+                )
+            )
+        return niftis[0], jsons[0]
 
 
 class GearInterface(ABC):
