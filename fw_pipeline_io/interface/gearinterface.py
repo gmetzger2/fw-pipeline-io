@@ -681,11 +681,10 @@ class DefaultSyncInterface(SyncInterface):
 
         return synced_files
 
-    def create_sync_suffix_params_for_file(
-        self,
-        file_entry: FileEntry,
-        params: str,
-    ) -> str:
+    def get_file_parent_container(self, file_entry: FileEntry):
+        """
+        Get the parent container of the file.
+        """
         # get the parent container of the file
         parent_container = self.gear_context.client.get(file_entry.parent_ref["id"])
         log.debug(
@@ -696,8 +695,16 @@ class DefaultSyncInterface(SyncInterface):
                 parent_container.container_type,
             )
         )
+        return parent_container
 
-        # Tag the parent container with its own id if it doesn't have it already
+    @staticmethod
+    def tag_parent_container_with_its_id(
+        parent_container: Union[
+            flywheel.Project, flywheel.Subject, flywheel.Session, flywheel.Acquisition
+        ],
+    ):
+        # Tag the parent container with its own id if it doesn't have it
+        # already
         if parent_container.id not in parent_container.tags:
             log.info(
                 "Tagging parent container '%s' with its own id" % parent_container.id
@@ -711,6 +718,22 @@ class DefaultSyncInterface(SyncInterface):
                 "that this container was used for a previous sync."
                 % parent_container.id
             )
+
+    def create_sync_suffix_params_for_file(
+        self,
+        file_entry: FileEntry,
+        params: str,
+    ) -> str:
+        """
+        Create the suffix params for the file to be synced.
+
+        This default implementation adds the acquisition id to the file's parent
+        acquisition. It then only syncs files from the parent acquisition with the
+        acquisition tag.
+        """
+        # Get file's parent container and tag it with its id
+        parent_container = self.get_file_parent_container(file_entry=file_entry)
+        self.tag_parent_container_with_its_id(parent_container=parent_container)
 
         # Filter only acquisitions with the acquisition tag
         params = (
