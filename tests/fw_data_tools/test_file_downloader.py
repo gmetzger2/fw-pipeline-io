@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 from unittest.mock import MagicMock, patch, mock_open
-from fw_pipeline_io.fw_data_tools.file_downloader import FileDownloader
+from fw_pipeline_io.fwdatatools.file_downloader import FileDownloader
 from flywheel import FileEntry
 
 
