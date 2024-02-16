@@ -667,7 +667,7 @@ class DefaultSyncInterface(SyncInterface):
 
         # Create the sync suffix params for the file, i.e., how to filter which
         # files to sync from the parent acquisition of the file
-        self.create_sync_suffix_params_for_file(
+        params = self.create_sync_suffix_params_for_file(
             file_entry=file_entry,
             params=params,
         )
@@ -776,8 +776,7 @@ class DefaultGearInterface(GearInterface):
 
         # Get the config.yaml file and verify that it has the correct
         # parameters
-        config_yaml_path = self.gear_config_yaml.get_and_verify_config_yaml(
-        )
+        config_yaml_path = self.gear_config_yaml.get_and_verify_config_yaml()
 
         # Return the inputs of the algorithm
         algo_inputs = AlgoInputs(

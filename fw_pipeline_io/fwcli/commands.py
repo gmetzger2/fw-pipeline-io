@@ -150,6 +150,7 @@ class FWCLI:
         command = f'{self.fw_cli_path} sync "{project_path}" "{dest}"'
         if params is not None:
             command += f" {params}"
+        log.debug("Running sync command:\n%s" % command)
 
         self.check_if_attempting_to_pipe(command=command)
         try:
