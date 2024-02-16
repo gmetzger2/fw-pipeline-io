@@ -763,7 +763,7 @@ class GearInterface(ABC):
         self.gear_config_yaml = gear_config_yaml
 
     @abstractmethod
-    def get_algo_inputs(self, config_file_model: Type[BaseModel]) -> AlgoInputs:
+    def get_algo_inputs(self) -> AlgoInputs:
         """
         This is the template method that calls prepares all the inputs of the
         algorithm.
@@ -778,7 +778,7 @@ class DefaultGearInterface(GearInterface):
     the methods they need.
     """
 
-    def get_algo_inputs(self, config_file_model: Type[BaseModel]) -> AlgoInputs:
+    def get_algo_inputs(self) -> AlgoInputs:
         # Generate the tags_file_in.yaml file by calling the main sync function
         tags_file_in_path = self.sync_instance.sync_main_function()
 
