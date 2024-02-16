@@ -785,7 +785,6 @@ class DefaultGearInterface(GearInterface):
         # Get the config.yaml file and verify that it has the correct
         # parameters
         config_yaml_path = self.gear_config_yaml.get_and_verify_config_yaml(
-            config_file_model=config_file_model
         )
 
         # Return the inputs of the algorithm
