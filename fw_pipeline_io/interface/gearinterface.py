@@ -684,6 +684,10 @@ class DefaultSyncInterface(SyncInterface):
     def get_file_parent_container(self, file_entry: FileEntry):
         """
         Get the parent container of the file.
+
+        Returns
+        -------
+        parent_container (Union[Project, Subject, Session, Acquisition, Analysis])
         """
         # get the parent container of the file
         parent_container = self.gear_context.client.get(file_entry.parent_ref["id"])
@@ -700,9 +704,21 @@ class DefaultSyncInterface(SyncInterface):
     @staticmethod
     def tag_parent_container_with_its_id(
         parent_container: Union[
-            flywheel.Project, flywheel.Subject, flywheel.Session, flywheel.Acquisition
+            flywheel.Project, flywheel.Subject, flywheel.Session,
+            flywheel.Acquisition, flywheel.Analysis
         ],
     ):
+        """
+        Tag the parent container with its own id if it doesn't have it already.
+
+        Args
+        ----
+        parent_container (Union[Project, Subject, Session, Acquisition, Analysis])
+
+        Returns
+        -------
+        None
+        """
         # Tag the parent container with its own id if it doesn't have it
         # already
         if parent_container.id not in parent_container.tags:
